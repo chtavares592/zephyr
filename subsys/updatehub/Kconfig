@@ -1,0 +1,105 @@
+#
+# Copyright (c) 2018 O.S.Systems
+#
+# SPDX -License-Identifier: Apache-2.0
+#
+
+menu "UpdateHub Firmware Over-the-Air configuration"
+
+
+config UPDATEHUB
+    bool"UpdateHub Firmware Over-the-Air support"
+    select FLASH
+    select REBOOT
+    select IMG_MANAGER
+    select BOOTLOADER_MCUBOOT
+    select MPU_ALLOW_FLASH_WRITE
+    select NETWORKING
+    select NEWLIB_LIBC
+    select NET_UDP
+    select NET_SOCKETS
+    select NET_SOCKETS_POSIX_NAMES
+    select COAP
+    select NET_CONFIG_NEED_IPV4
+    select NET_CONFIG_SETTINGS
+    select DNS_RESOLVER
+    select JSON_LIBRARY
+    select TINYCRYPT
+    select TINYCRYPT_SHA256
+    select NVS
+    default "n"
+    help
+        The options below ought to show only if UpdateHub support is enabled.
+
+if UPDATEHUB
+config UPDATEHUB_POLL_INTERVAL
+    int "Time to poll interval (in minutes)"
+    default 1440
+    range 0 43200
+    depends on UPDATEHUB
+    help
+        Set the interval that the UpdateHub update server will be polled.
+        This time interval is zero and 43200 minutes(30 days).
+
+config UPDATEHUB_PRODUCT_UID
+    string "Product Unique Identifier (UID)"
+    default ""
+    depends on UPDATEHUB
+    help
+        The product unique identifier is used when communicating
+        with the UpdateHub server.
+
+config UPDATEHUB_SERVER
+    string
+    depends on UPDATEHUB
+    default "api.updatehub.io"
+    help
+        This configuration is default, if need to use
+        other address, must be set on the UpdateHub shell
+
+config UPDATEHUB_DOWNLOAD_SERVER
+    string
+    depends on UPDATEHUB
+    #TODO: Set the right download server
+    default ""
+    help
+        This configuration is default, if need to use
+        other address, must be set on the UpdateHub shell
+
+config UPDATEHUB_LOG
+    bool "Enable Logger"
+    depends on UPDATEHUB
+    select LOG
+    default "n"
+    help
+        UpdateHub switch for the logger, when turned off log calls will not be
+        compiled in.
+
+if UPDATEHUB_LOG
+config UPDATEHUB_LOG_LEVEL
+	int
+	prompt "Updatehub Logging level"
+	depends on LOG
+	default 1
+	range 0 4
+	help
+	  Sets log level for UpdateHub.
+	  Levels are:
+	  0 OFF, do not write
+	  1 ERROR, only write LOG_ERR
+	  2 WARNING, write LOG_WRN in addition to previous level
+	  3 INFO, write LOG_INF in addition to previous levels
+	  4 DEBUG, write LOG_DBG in addition to previous levels
+endif #UPDATEHUB_LOG
+
+config UPDATEHUB_SHELL
+    bool "Enable updatehub shell utilities"
+    depends on UPDATEHUB
+    default "n"
+    select SHELL
+    select KERNEL_SHELL
+    help
+        Activate shell module that provides UpdateHub commands like
+endif #UPDATEHUB
+
+endmenu
